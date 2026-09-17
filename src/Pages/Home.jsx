@@ -5,7 +5,7 @@ import Stats from "../Componants/Stats";
 import AmazonTopics from "../Componants/AmazonTopics";
 import HowItWorks from "../Componants/HowItWorks";
 
-import FAQ from "./Faq";
+import FAQ from "./FAQ";
 import Contact from "./Contact";
 import Hero from "../Componants/Hero";
 import DiscountPopup from "../Componants/DiscountPopup";
