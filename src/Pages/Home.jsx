@@ -20,7 +20,7 @@ const Home = () => {
       <Hero />
       <Stats />
       <MentorSection />
-      <AmazonTopics />
+
       <HowItWorks />
       <TeamSection />
       <Testimonials />

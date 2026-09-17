@@ -6,7 +6,7 @@ import { BrowserRouter, Routes, Router, Route, Link } from "react-router-dom";
 
 import Navbar from "./Componants/Navbar";
 
-import FAQ from "./Pages/Faq";
+import FAQ from "./Pages/FAQ";
 
 import AboutInstructor from "./Componants/MentorSection";
 
