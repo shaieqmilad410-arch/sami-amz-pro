@@ -40,7 +40,7 @@ const testimonials = [
   },
   {
     id: 5,
-    name: "Mahdi wafaee",
+    name: "Suliman Mirzaee",
     role: "Amazon FBA student",
     image: "/photo 6.jpeg",
     description:
