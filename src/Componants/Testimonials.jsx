@@ -8,34 +8,43 @@ import { AnimatePresence, motion } from "framer-motion";
 const testimonials = [
   {
     id: 1,
-    name: "Milad Shaieq",
+    name: "Said Ansarulhaq Obaidai",
     role: "Amazon FBA Student",
-    image: "/milad1.jpeg",
-    description: "if you go there so as possibe you will strcik fuck",
+    image: "/photo 1.jpeg",
+    description:
+      "This center gave me practical skills,real experience ,and confidence,thanks to my teacher,I'm ready to buy and sell on amazon",
   },
   {
     id: 2,
-    name: "Shafiqullah Mandozai",
+    name: "Omar Khostai",
     role: "Amazon Private Label Student",
-    image: "/shafiq.jpeg",
+    image: "/photo 2.jpeg",
     description:
       "What I liked most was the practical approach. Instead of only watching theory, we worked with real examples and learned how successful Amazon sellers make decisions.",
   },
   {
     id: 3,
-    name: "Aminullah Sultai",
+    name: "Khalid jamalyar",
     role: "Amazon Business Student",
-    image: "/sultani3.jpeg",
+    image: "/photo 3.jpeg",
     description:
       "The instructors explained difficult concepts in a simple way. I learned about Alibaba, suppliers, product research, branding, and the complete process of starting an Amazon business.",
   },
   {
     id: 4,
-    name: "Jawid Mohammadi",
+    name: "Mahdi wafaee",
     role: "Amazon & Branding Student",
-    image: "/jawid.jpeg",
+    image: "/photo 5.jpeg",
     description:
       "This center gave me much more confidence. I now understand how the Amazon ecosystem works and, most importantly, I have a clear roadmap for building my own online business.",
+  },
+  {
+    id: 5,
+    name: "Mahdi wafaee",
+    role: "Amazon FBA student",
+    image: "/photo 6.jpeg",
+    description:
+      "Our center prepared us with hands-on training and constant support.I'm proud to graduate and start my journey confidently.",
   },
 ];
 

@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+
 import { Link } from "react-router-dom";
 
 const Navbar = () => {
@@ -6,46 +7,53 @@ const Navbar = () => {
 
   const navLinks = [
     { name: "Home", path: "/" },
+
     { name: "Courses", path: "/courses" },
+
     { name: "About", path: "/about" },
 
     { name: "FAQ", path: "/faq" },
+
     { name: "Contact", path: "/contact" },
   ];
 
   return (
-    <nav className="fixed left-0 top-0 z-50 w-full bg-[#F8F9F9] backdrop-blur-xl shadow-[0_4px_25px_rgba(0,0,0,0.06)]">
+    <nav className="fixed left-0 top-0 z-50 w-full bg-black backdrop-blur-xl shadow-[0_4px_25px_rgba(0,0,0,0.06)]">
       <div className="mx-auto flex h-[76px] max-w-7xl items-center justify-between px-3 sm:px-6 lg:px-8">
         {/* ================= LOGO ================= */}
+
         <Link
           to="/"
           onClick={() => setIsOpen(false)}
           className="group flex items-center "
         >
           <img
-            src="/korslogo.png"
+            src="/pnglogo.png"
             alt="Amazon Business Academy"
-            className="h-15 w-50 mt-4   object-cover transition duration-300 group-hover:scale-105"
+            className="h-15 w-50 mt-4    object-contain transition duration-300 group-hover:scale-105"
           />
         </Link>
 
         {/* ================= DESKTOP NAV ================= */}
-        <div className="hidden items-center gap-7 lg:flex">
+
+        <div className="hidden items-center gap-7 lg:flex ">
           {navLinks.map((link) => (
             <Link
               key={link.name}
               to={link.path}
-              className="group relative py-2 text-[15px] font-medium text-gray-700 transition duration-300 hover:text-gray-950"
+              className="group relative py-2 text-[15px] font-medium text-white transition duration-300"
             >
               {link.name}
 
               {/* Animated underline */}
+
               <span className="absolute bottom-0 left-1/2 h-[2px] w-0 -translate-x-1/2 rounded-full bg-[#FF9900] transition-all duration-300 ease-out group-hover:w-full" />
             </Link>
           ))}
         </div>
 
         {/* ================= DESKTOP CTA ================= */}
+
         <div className="hidden lg:block">
           <Link
             to="/courses"
@@ -58,11 +66,13 @@ const Navbar = () => {
             </span>
 
             {/* Shine */}
+
             <span className="absolute -left-12 top-0 h-full w-8 rotate-12 bg-white/30 blur-sm transition-all duration-700 group-hover:left-[110%]" />
           </Link>
         </div>
 
         {/* ================= MOBILE BUTTON ================= */}
+
         <button
           onClick={() => setIsOpen(!isOpen)}
           type="button"
@@ -93,6 +103,7 @@ const Navbar = () => {
       </div>
 
       {/* ================= MOBILE MENU ================= */}
+
       <div
         className={`overflow-hidden border-t border-gray-100 bg-white transition-all duration-500 ease-in-out lg:hidden ${
           isOpen ? "max-h-[600px] opacity-100" : "max-h-0 opacity-0"
@@ -120,6 +131,7 @@ const Navbar = () => {
           </div>
 
           {/* Mobile CTA */}
+
           <Link
             to="/courses"
             onClick={() => setIsOpen(false)}

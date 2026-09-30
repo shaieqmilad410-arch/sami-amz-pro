@@ -1,5 +1,12 @@
-import React from "react";
-import { motion } from "framer-motion";
+import React, { useEffect, useRef } from "react";
+import {
+  motion,
+  animate,
+  useInView,
+  useMotionValue,
+  useReducedMotion,
+  useTransform,
+} from "framer-motion";
 
 const stats = [
   {
@@ -23,6 +30,39 @@ const stats = [
     description: "Learn at your own pace",
   },
 ];
+
+/* Counts from 0 to the number in the string when it scrolls into view.
+   "10+" -> 10 + "+", "5K+" -> 5 + "K+", "95%" -> 95 + "%", "24/7" -> 24 + "/7" */
+const CountUp = ({ value, delay = 0, duration = 2 }) => {
+  const reduce = useReducedMotion();
+  const match = String(value).match(/^(\d+)(.*)$/);
+  const target = match ? parseInt(match[1], 10) : 0;
+  const suffix = match ? match[2] : "";
+
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, amount: 0.5 });
+  const count = useMotionValue(reduce ? target : 0);
+  const rounded = useTransform(count, (v) => Math.round(v));
+
+  useEffect(() => {
+    if (!inView || reduce) return;
+    const controls = animate(count, target, {
+      duration,
+      delay,
+      ease: [0.22, 1, 0.36, 1], // fast start, smooth slow-down at the end
+    });
+    return () => controls.stop();
+  }, [inView, reduce, target, duration, delay, count]);
+
+  if (!match) return <span>{value}</span>;
+
+  return (
+    <span ref={ref} className="tabular-nums">
+      <motion.span>{rounded}</motion.span>
+      {suffix}
+    </span>
+  );
+};
 
 const Stats = () => {
   return (
@@ -99,7 +139,7 @@ const Stats = () => {
                 }}
                 className="text-4xl font-bold text-[#FF9900]"
               >
-                {stat.number}
+                <CountUp value={stat.number} delay={index * 0.12 + 0.2} />
               </motion.div>
 
               {/* Label */}
