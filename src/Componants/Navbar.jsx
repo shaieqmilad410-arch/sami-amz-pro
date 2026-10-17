@@ -1,146 +1,150 @@
 import React, { useState } from "react";
+import { Link, NavLink } from "react-router-dom";
 
-import { Link } from "react-router-dom";
+const navLinks = [
+  { name: "Home", path: "/" },
+  { name: "Courses", path: "/courses" },
+  { name: "About", path: "/about" },
+  { name: "FAQ", path: "/faq" },
+  { name: "Contact", path: "/contact" },
+];
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const navLinks = [
-    { name: "Home", path: "/" },
+  const linkClass = ({ isActive }) =>
+    `group relative py-2 text-sm font-medium transition-colors duration-200 ${
+      isActive ? "text-cyan-400" : "text-white/75 hover:text-cyan-300"
+    }`;
 
-    { name: "Courses", path: "/courses" },
-
-    { name: "About", path: "/about" },
-
-    { name: "FAQ", path: "/faq" },
-
-    { name: "Contact", path: "/contact" },
-  ];
+  const ctaClass =
+    "group inline-flex items-center justify-center gap-2 rounded-full bg-cyan-500 px-5 py-3 text-sm font-semibold text-slate-950 transition duration-200 hover:-translate-y-0.5 hover:bg-cyan-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-400";
 
   return (
-    <nav className="fixed left-0 top-0 z-50 w-full bg-black backdrop-blur-xl shadow-[0_4px_25px_rgba(0,0,0,0.06)]">
-      <div className="mx-auto flex h-[76px] max-w-7xl items-center justify-between px-3 sm:px-6 lg:px-8">
-        {/* ================= LOGO ================= */}
-
+    <nav className="fixed left-0 top-0 z-50 w-full border-b border-white/10 bg-black/95 text-white shadow-lg shadow-black/10 backdrop-blur-xl">
+      <div className="mx-auto flex h-[76px] max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+        {/* Logo */}
         <Link
           to="/"
           onClick={() => setIsOpen(false)}
-          className="group flex items-center "
+          aria-label="Amazon Business Academy home"
+          className="flex shrink-0 items-center"
         >
           <img
-            src="/pnglogo.png"
+            src="/SamiAMZ Cyan Smile Logo.png"
             alt="Amazon Business Academy"
-            className="h-15 w-50 mt-4    object-contain transition duration-300 group-hover:scale-105"
+            className="h-[62px] w-auto max-w-[155px] object-contain transition-transform duration-200 hover:scale-[1.03]"
           />
         </Link>
 
-        {/* ================= DESKTOP NAV ================= */}
-
-        <div className="hidden items-center gap-7 lg:flex ">
+        {/* Desktop navigation */}
+        <div className="hidden items-center gap-7 lg:flex">
           {navLinks.map((link) => (
-            <Link
+            <NavLink
               key={link.name}
               to={link.path}
-              className="group relative py-2 text-[15px] font-medium text-white transition duration-300"
+              end={link.path === "/"}
+              className={linkClass}
             >
-              {link.name}
-
-              {/* Animated underline */}
-
-              <span className="absolute bottom-0 left-1/2 h-[2px] w-0 -translate-x-1/2 rounded-full bg-[#FF9900] transition-all duration-300 ease-out group-hover:w-full" />
-            </Link>
+              {({ isActive }) => (
+                <>
+                  {link.name}
+                  <span
+                    className={`absolute -bottom-1 left-0 h-[2px] rounded-full bg-cyan-400 transition-all duration-200 ${
+                      isActive ? "w-full" : "w-0 group-hover:w-full"
+                    }`}
+                  />
+                </>
+              )}
+            </NavLink>
           ))}
         </div>
 
-        {/* ================= DESKTOP CTA ================= */}
-
+        {/* Desktop CTA */}
         <div className="hidden lg:block">
-          <Link
-            to="/courses"
-            className="group relative flex items-center gap-2 overflow-hidden rounded-full bg-[#FF9900] px-6 py-3 text-sm font-bold text-gray-900 shadow-[0_6px_20px_rgba(255,153,0,0.20)] transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#ffad33] hover:shadow-[0_8px_25px_rgba(255,153,0,0.30)]"
-          >
-            <span className="relative z-10">Start Learning</span>
-
-            <span className="relative z-10 text-lg transition-transform duration-300 group-hover:translate-x-1">
+          <Link to="/courses" className={ctaClass}>
+            Start Learning
+            <span className="transition-transform duration-200 group-hover:translate-x-1">
               →
             </span>
-
-            {/* Shine */}
-
-            <span className="absolute -left-12 top-0 h-full w-8 rotate-12 bg-white/30 blur-sm transition-all duration-700 group-hover:left-[110%]" />
           </Link>
         </div>
 
-        {/* ================= MOBILE BUTTON ================= */}
-
+        {/* Mobile menu toggle */}
         <button
-          onClick={() => setIsOpen(!isOpen)}
           type="button"
-          aria-label="Toggle navigation"
+          onClick={() => setIsOpen((open) => !open)}
+          aria-label={isOpen ? "Close navigation menu" : "Open navigation menu"}
           aria-expanded={isOpen}
-          className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 text-gray-800 transition duration-300 hover:bg-orange-50 hover:text-[#FF9900] lg:hidden"
+          aria-controls="mobile-navigation"
+          className="flex h-10 w-10 items-center justify-center rounded-lg border border-white/15 text-white transition hover:border-cyan-400/60 hover:bg-cyan-400/10 hover:text-cyan-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-400 lg:hidden"
         >
-          <div className="relative h-5 w-6">
+          <span className="relative block h-5 w-5">
             <span
-              className={`absolute left-0 top-0 block h-[2px] w-6 rounded-full bg-current transition-all duration-300 ${
-                isOpen ? "top-2 rotate-45" : ""
+              className={`absolute left-0 h-[2px] w-5 rounded-full bg-current transition-all duration-200 ${
+                isOpen ? "top-[9px] rotate-45" : "top-[3px]"
               }`}
             />
-
             <span
-              className={`absolute left-0 top-2 block h-[2px] w-6 rounded-full bg-current transition-all duration-300 ${
-                isOpen ? "opacity-0" : ""
+              className={`absolute left-0 top-[9px] h-[2px] w-5 rounded-full bg-current transition-all duration-200 ${
+                isOpen ? "opacity-0" : "opacity-100"
               }`}
             />
-
             <span
-              className={`absolute left-0 top-4 block h-[2px] w-6 rounded-full bg-current transition-all duration-300 ${
-                isOpen ? "top-2 -rotate-45" : ""
+              className={`absolute left-0 h-[2px] w-5 rounded-full bg-current transition-all duration-200 ${
+                isOpen ? "top-[9px] -rotate-45" : "top-[15px]"
               }`}
             />
-          </div>
+          </span>
         </button>
       </div>
 
-      {/* ================= MOBILE MENU ================= */}
-
+      {/* Mobile navigation */}
       <div
-        className={`overflow-hidden border-t border-gray-100 bg-white transition-all duration-500 ease-in-out lg:hidden ${
-          isOpen ? "max-h-[600px] opacity-100" : "max-h-0 opacity-0"
+        id="mobile-navigation"
+        className={`overflow-hidden border-t border-white/10 bg-neutral-950 transition-[max-height,opacity] duration-300 ease-in-out lg:hidden ${
+          isOpen
+            ? "max-h-[480px] opacity-100"
+            : "pointer-events-none max-h-0 opacity-0"
         }`}
+        aria-hidden={!isOpen}
       >
-        <div className="mx-auto max-w-7xl px-4 py-5 sm:px-6">
+        <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6">
           <div className="flex flex-col">
             {navLinks.map((link, index) => (
-              <Link
+              <NavLink
                 key={link.name}
                 to={link.path}
+                end={link.path === "/"}
+                tabIndex={isOpen ? 0 : -1}
                 onClick={() => setIsOpen(false)}
-                className="group flex items-center justify-between rounded-xl px-4 py-3.5 text-gray-700 transition-all duration-300 hover:bg-orange-50 hover:pl-6 hover:text-[#FF9900]"
+                className={({ isActive }) =>
+                  `flex items-center justify-between rounded-lg px-4 py-3 transition-colors duration-200 ${
+                    isActive
+                      ? "bg-cyan-400/10 text-cyan-300"
+                      : "text-white/75 hover:bg-white/5 hover:text-cyan-300"
+                  }`
+                }
                 style={{
-                  transitionDelay: isOpen ? `${index * 40}ms` : "0ms",
+                  transitionDelay: isOpen ? `${index * 35}ms` : "0ms",
                 }}
               >
-                <span className="font-medium">{link.name}</span>
-
-                <span className="translate-x-[-5px] text-[#FF9900] opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100">
+                <span className="text-sm font-medium">{link.name}</span>
+                <span aria-hidden="true" className="text-cyan-400">
                   →
                 </span>
-              </Link>
+              </NavLink>
             ))}
           </div>
 
-          {/* Mobile CTA */}
-
           <Link
             to="/courses"
+            tabIndex={isOpen ? 0 : -1}
             onClick={() => setIsOpen(false)}
-            className="mt-4 flex w-full items-center justify-center gap-2 rounded-full bg-[#FF9900] px-6 py-3.5 font-bold text-gray-900 shadow-lg shadow-orange-500/20 transition-all duration-300 hover:bg-[#ffad33] active:scale-[0.98]"
+            className={`${ctaClass} mt-4 w-full`}
           >
             Start Learning
-            <span className="transition-transform duration-300 hover:translate-x-1">
-              →
-            </span>
+            <span aria-hidden="true">→</span>
           </Link>
         </div>
       </div>

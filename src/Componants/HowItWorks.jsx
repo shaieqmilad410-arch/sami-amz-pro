@@ -1,5 +1,5 @@
 import React from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { Link } from "react-router-dom";
 
 const steps = [
@@ -8,145 +8,200 @@ const steps = [
     title: "Choose Your Path",
     description:
       "Choose the Amazon skill you want to master, whether it's FBA, product research, Alibaba sourcing, branding, or PPC.",
-    icon: "🎯",
+    tag: "FIND YOUR FOCUS",
   },
   {
     number: "02",
     title: "Learn the Strategy",
     description:
       "Follow clear and practical lessons that explain the strategies, tools, and systems used in real Amazon businesses.",
-    icon: "📚",
+    tag: "BUILD KNOWLEDGE",
   },
   {
     number: "03",
     title: "Practice & Apply",
     description:
       "Turn knowledge into action by practicing product research, analyzing opportunities, creating strategies, and solving real problems.",
-    icon: "⚡",
+    tag: "GET HANDS-ON",
   },
   {
     number: "04",
     title: "Build & Scale",
     description:
       "Use what you learn to build your Amazon business and develop the skills needed to grow it over time.",
-    icon: "🚀",
+    tag: "MOVE FORWARD",
   },
 ];
 
 const HowItWorks = () => {
+  const shouldReduceMotion = useReducedMotion();
+
+  const reveal = (delay = 0) => ({
+    initial: shouldReduceMotion ? false : { opacity: 0, y: 18 },
+    whileInView: { opacity: 1, y: 0 },
+    viewport: { once: true, amount: 0.2 },
+    transition: {
+      duration: shouldReduceMotion ? 0 : 0.55,
+      delay: shouldReduceMotion ? 0 : delay,
+    },
+  });
+
   return (
-    <section className="relative overflow-hidden bg-white py-24">
-      {/* Background decoration */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.8 }}
-        whileInView={{ opacity: 1, scale: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 1 }}
-        className="absolute -left-40 top-20 h-96 w-96 rounded-full bg-orange-100/70 blur-3xl"
+    <section
+      id="how-it-works"
+      className="relative isolate overflow-hidden bg-[#070B10] py-20 text-white sm:py-28"
+    >
+      {/* Subtle cyan grid */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 -z-10 opacity-[0.12]"
+        style={{
+          backgroundImage:
+            "linear-gradient(rgba(34,211,238,0.13) 1px, transparent 1px), linear-gradient(90deg, rgba(34,211,238,0.13) 1px, transparent 1px)",
+          backgroundSize: "56px 56px",
+          maskImage:
+            "linear-gradient(to bottom, transparent, black 18%, black 82%, transparent)",
+        }}
       />
 
-      <motion.div
-        initial={{ opacity: 0, scale: 0.8 }}
-        whileInView={{ opacity: 1, scale: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 1, delay: 0.2 }}
-        className="absolute -right-40 bottom-20 h-96 w-96 rounded-full bg-blue-100/70 blur-3xl"
+      {/* Ambient cyan lighting */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -left-40 top-20 -z-10 h-96 w-96 rounded-full bg-cyan-500/[0.09] blur-[120px]"
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -right-40 bottom-0 -z-10 h-96 w-96 rounded-full bg-cyan-400/[0.08] blur-[120px]"
       />
 
-      <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
-        {/* Heading */}
-        <motion.div
-          initial={{ opacity: 0, y: 35 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.2 }}
-          transition={{ duration: 0.7 }}
-          className="mx-auto max-w-3xl text-center"
-        >
-          <span className="inline-flex rounded-full bg-orange-50 px-4 py-2 text-sm font-semibold text-[#FF9900]">
-            How It Works
-          </span>
+      {/* Top accent */}
+      <div
+        aria-hidden="true"
+        className="absolute left-0 right-0 top-0 h-px bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent"
+      />
 
-          <h2 className="mt-5 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl lg:text-5xl">
-            From Learning to
-            <span className="text-[#FF9900]"> Building Your Business</span>
-          </h2>
+      <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
+        {/* Section heading */}
+        <div className="grid gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:items-end">
+          <motion.div {...reveal()}>
+            <div className="flex items-center gap-3">
+              <span className="h-[2px] w-8 bg-cyan-400" />
+              <span className="text-xs font-bold uppercase tracking-[0.2em] text-cyan-300">
+                The learning process
+              </span>
+            </div>
 
-          <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-gray-600 sm:text-lg">
-            A simple and practical learning system designed to help you
-            understand Amazon business and turn knowledge into action.
-          </p>
-        </motion.div>
+            <h2 className="mt-5 max-w-lg text-4xl font-bold leading-tight tracking-tight text-white sm:text-5xl lg:text-6xl">
+              Learn it.
+              <br />
+              <span className="bg-gradient-to-r from-cyan-300 to-cyan-500 bg-clip-text text-transparent">
+                Put it to work.
+              </span>
+            </h2>
+          </motion.div>
 
-        {/* Steps */}
-        <div className="relative mt-16">
-          {/* Connecting line - desktop */}
-          <div className="absolute left-[12%] right-[12%] top-16 hidden h-px bg-gray-200 lg:block" />
-
-          <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-4">
-            {steps.map((step, index) => (
-              <motion.div
-                key={step.number}
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.2 }}
-                transition={{
-                  duration: 0.6,
-                  delay: index * 0.12,
-                }}
-                className="relative text-center"
-              >
-                {/* Number/Icon */}
-                <motion.div
-                  whileHover={{ y: -6, scale: 1.05 }}
-                  transition={{ duration: 0.25 }}
-                  className="relative z-10 mx-auto flex h-32 w-32 items-center justify-center rounded-full border-8 border-white bg-gray-900 shadow-xl"
-                >
-                  <div className="flex flex-col items-center">
-                    <span className="text-3xl">{step.icon}</span>
-
-                    <span className="mt-1 text-xs font-bold tracking-widest text-[#FF9900]">
-                      {step.number}
-                    </span>
-                  </div>
-                </motion.div>
-
-                {/* Content */}
-                <div className="mt-7">
-                  <h3 className="text-xl font-bold text-gray-900">
-                    {step.title}
-                  </h3>
-
-                  <p className="mt-3 text-sm leading-6 text-gray-500">
-                    {step.description}
-                  </p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+          <motion.div {...reveal(0.1)} className="lg:pb-2">
+            <p className="max-w-xl text-base leading-7 text-slate-400 sm:text-lg sm:leading-8">
+              Building an Amazon business takes more than watching lessons. Our
+              approach helps you understand the fundamentals, practice what
+              matters, and turn what you learn into useful skills.
+            </p>
+          </motion.div>
         </div>
 
-        {/* Bottom CTA */}
+        {/* Steps */}
+        <div className="relative mt-14 border-t border-white/10 sm:mt-20">
+          {steps.map((step, index) => (
+            <motion.article
+              key={step.number}
+              initial={shouldReduceMotion ? false : { opacity: 0, x: -14 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true, amount: 0.2 }}
+              transition={{
+                duration: shouldReduceMotion ? 0 : 0.5,
+                delay: shouldReduceMotion ? 0 : index * 0.08,
+              }}
+              className="group relative grid gap-4 border-b border-white/10 py-8 transition-colors duration-300 hover:bg-white/[0.025] sm:py-10 md:grid-cols-[100px_1fr_1.2fr_40px] md:items-center md:gap-8"
+            >
+              {/* Number */}
+              <div className="flex items-center gap-3 md:block">
+                <span className="font-mono text-sm font-semibold tabular-nums text-cyan-300">
+                  {step.number}
+                </span>
+
+                <span className="h-px w-8 bg-cyan-400/40 md:hidden" />
+
+                <span className="text-[10px] font-semibold tracking-[0.16em] text-slate-500 md:hidden">
+                  {step.tag}
+                </span>
+              </div>
+
+              {/* Title */}
+              <div>
+                <h3 className="text-2xl font-semibold tracking-tight text-white transition-colors duration-300 group-hover:text-cyan-300 sm:text-3xl">
+                  {step.title}
+                </h3>
+              </div>
+
+              {/* Description */}
+              <div>
+                <span className="mb-3 hidden text-[10px] font-semibold tracking-[0.18em] text-cyan-400/70 md:block">
+                  {step.tag}
+                </span>
+
+                <p className="max-w-xl text-sm leading-7 text-slate-400 transition-colors duration-300 group-hover:text-slate-300 sm:text-base">
+                  {step.description}
+                </p>
+              </div>
+
+              {/* Arrow */}
+              <div className="hidden h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/[0.02] text-slate-500 transition-all duration-300 group-hover:border-cyan-400/50 group-hover:bg-cyan-400/10 group-hover:text-cyan-300 md:flex">
+                <svg
+                  width="17"
+                  height="17"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <path d="M5 12h14" />
+                  <path d="m12 5 7 7-7 7" />
+                </svg>
+              </div>
+
+              {/* Hover accent */}
+              <div
+                aria-hidden="true"
+                className="absolute bottom-0 left-0 h-px w-0 bg-gradient-to-r from-cyan-400 to-transparent transition-all duration-500 group-hover:w-full"
+              />
+            </motion.article>
+          ))}
+        </div>
+
+        {/* Bottom call to action */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.7, delay: 0.3 }}
-          className="mt-16 text-center"
+          {...reveal(0.1)}
+          className="mt-10 flex flex-col gap-5 sm:mt-12 sm:flex-row sm:items-center sm:justify-between"
         >
+          <p className="max-w-md text-sm leading-7 text-slate-400 sm:text-base">
+            Ready to develop practical skills and take the next step in your
+            Amazon business journey?
+          </p>
+
           <Link
             to="/amazon-fba"
-            className="group inline-flex items-center gap-3 rounded-xl bg-[#FF9900] px-7 py-3.5 font-semibold text-white shadow-lg shadow-orange-200 transition-all duration-300 hover:-translate-y-1 hover:bg-orange-500 hover:shadow-xl"
+            className="group inline-flex w-fit items-center gap-3 rounded-lg border border-cyan-400/30 bg-cyan-400/10 px-6 py-3.5 text-sm font-semibold text-cyan-200 transition-all duration-300 hover:border-cyan-300/70 hover:bg-cyan-400/20 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-400"
           >
-            Start Learning
-            <motion.span
-              animate={{ x: [0, 5, 0] }}
-              transition={{
-                duration: 1.5,
-                repeat: Infinity,
-              }}
+            Explore the courses
+            <span
+              aria-hidden="true"
+              className="transition-transform duration-300 group-hover:translate-x-1"
             >
               →
-            </motion.span>
+            </span>
           </Link>
         </motion.div>
       </div>

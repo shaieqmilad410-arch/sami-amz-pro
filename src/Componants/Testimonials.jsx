@@ -1,479 +1,265 @@
-import React, { useEffect, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import { motion, useReducedMotion } from "framer-motion";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 
-// ----------------------------------------------------
-// STUDENT DATA
-// ----------------------------------------------------
-
-const testimonials = [
+const cards = [
   {
-    id: 1,
-    name: "Said Ansarulhaq Obaidai",
-    role: "Amazon FBA Student",
-    image: "/photo 1.jpeg",
+    title: "The Abstract Void",
     description:
-      "This center gave me practical skills,real experience ,and confidence,thanks to my teacher,I'm ready to buy and sell on amazon",
+      "Explore creative ideas and discover new possibilities in a world of imagination.",
+    image: "/baba-2026-1.png",
+    color: "#06b6d4",
   },
   {
-    id: 2,
-    name: "Omar Khostai",
-    role: "Amazon Private Label Student",
-    image: "/photo 2.jpeg",
+    title: "Lines of Code",
     description:
-      "What I liked most was the practical approach. Instead of only watching theory, we worked with real examples and learned how successful Amazon sellers make decisions.",
-  },
-  {
-    id: 3,
-    name: "Khalid jamalyar",
-    role: "Amazon Business Student",
+      "Every line of code brings an idea closer to becoming something extraordinary.",
     image: "/photo 3.jpeg",
-    description:
-      "The instructors explained difficult concepts in a simple way. I learned about Alibaba, suppliers, product research, branding, and the complete process of starting an Amazon business.",
+    color: "#0891b2",
   },
   {
-    id: 4,
-    name: "Mahdi wafaee",
-    role: "Amazon & Branding Student",
-    image: "/photo 5.jpeg",
+    title: "Digital Horizons",
     description:
-      "This center gave me much more confidence. I now understand how the Amazon ecosystem works and, most importantly, I have a clear roadmap for building my own online business.",
+      "Discover new perspectives and explore the limitless possibilities of the digital world.",
+    image: "/digital.jpg",
+    color: "#22d3ee",
   },
   {
-    id: 5,
-    name: "Suliman Mirzaee",
-    role: "Amazon FBA student",
-    image: "/photo 6.jpeg",
+    title: "Future Systems",
     description:
-      "Our center prepared us with hands-on training and constant support.I'm proud to graduate and start my journey confidently.",
+      "Build smarter solutions with creative thinking, technology, and innovation.",
+    image: "/future.jpg",
+    color: "#0e7490",
+  },
+  {
+    title: "Beyond the Screen",
+    description:
+      "Turn your imagination into meaningful experiences that inspire and connect people.",
+    image: "/screen.jpg",
+    color: "#155e75",
   },
 ];
 
-// ----------------------------------------------------
-// SLIDE ANIMATION
-// ----------------------------------------------------
+const ROTATION_INTERVAL = 2000;
+const STEP = 360 / cards.length;
 
-const slideVariants = {
-  enter: {
-    opacity: 0,
-    x: 80,
-    scale: 0.96,
-  },
+export default function CircularCards() {
+  const [active, setActive] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const prefersReducedMotion = useReducedMotion();
 
-  center: {
-    opacity: 1,
-    x: 0,
-    scale: 1,
-  },
-
-  exit: {
-    opacity: 0,
-    x: -80,
-    scale: 0.96,
-  },
-};
-
-// ----------------------------------------------------
-// TESTIMONIALS COMPONENT
-// ----------------------------------------------------
-
-const Testimonials = () => {
-  const [current, setCurrent] = useState(0);
-
-  const currentStudent = testimonials[current];
-
-  // --------------------------------------------------
-  // NEXT STUDENT
-  // --------------------------------------------------
-
-  const nextStudent = () => {
-    setCurrent((prev) => (prev + 1) % testimonials.length);
-  };
-
-  // --------------------------------------------------
-  // PREVIOUS STUDENT
-  // --------------------------------------------------
-
-  const previousStudent = () => {
-    setCurrent(
-      (prev) => (prev - 1 + testimonials.length) % testimonials.length,
-    );
-  };
-
-  // --------------------------------------------------
-  // AUTOMATIC SLIDER
-  // Every 5 seconds another student appears
-  // --------------------------------------------------
-
+  // Automatic card rotation
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrent((prev) => (prev + 1) % testimonials.length);
-    }, 5000);
+    if (paused) return;
 
-    return () => clearInterval(interval);
-  }, []);
+    const timer = window.setInterval(() => {
+      setActive((current) => (current + 1) % cards.length);
+    }, ROTATION_INTERVAL);
+
+    return () => window.clearInterval(timer);
+  }, [paused]);
+
+  const nextCard = () => {
+    setActive((current) => (current + 1) % cards.length);
+  };
+
+  const previousCard = () => {
+    setActive((current) => (current - 1 + cards.length) % cards.length);
+  };
+
+  const transitionDuration = prefersReducedMotion ? 0.2 : 0.7;
 
   return (
-    <section
-      id="testimonials"
-      className="relative overflow-hidden bg-slate-950 py-20 sm:py-24 lg:py-28"
-    >
-      {/* =================================================
-          BACKGROUND DECORATION
-      ================================================= */}
-
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <motion.div
-          animate={{
-            x: [0, 40, 0],
-            y: [0, -30, 0],
+    <section className="relative w-full overflow-hidden bg-[#070B10] px-4 py-20 text-white sm:px-6">
+      {/* Background effects */}
+      <div className="pointer-events-none absolute inset-0">
+        <div
+          className="absolute inset-0 opacity-[0.07]"
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(6,182,212,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(6,182,212,0.5) 1px, transparent 1px)",
+            backgroundSize: "45px 45px",
           }}
-          transition={{
-            duration: 10,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-          className="absolute -left-32 top-20 h-72 w-72 rounded-full bg-orange-500/10 blur-3xl"
         />
 
-        <motion.div
-          animate={{
-            x: [0, -40, 0],
-            y: [0, 30, 0],
-          }}
-          transition={{
-            duration: 12,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-          className="absolute -right-32 bottom-10 h-80 w-80 rounded-full bg-yellow-400/10 blur-3xl"
-        />
+        <div className="absolute left-1/2 top-1/2 h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full bg-cyan-500/10 blur-[120px]" />
       </div>
 
-      {/* =================================================
-          CONTAINER
-      ================================================= */}
+      <div className="relative z-10 mx-auto max-w-7xl">
+        {/* Section heading */}
+        <div className="mb-14 text-center">
+          <p className="mb-3 text-sm font-semibold uppercase tracking-[0.3em] text-cyan-400">
+            Discover More
+          </p>
 
-      <div className="relative mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* =================================================
-            SECTION HEADER
-        ================================================= */}
-
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.3 }}
-          transition={{ duration: 0.7 }}
-          className="mx-auto mb-12 max-w-3xl text-center sm:mb-16"
-        >
-          {/* Small badge */}
-
-          <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-orange-400/20 bg-orange-400/10 px-4 py-2 text-sm font-semibold text-orange-300">
-            <i className="fa-solid fa-graduation-cap" />
-            Student Success Stories
-          </div>
-
-          {/* Heading */}
-
-          <h2 className="text-3xl font-extrabold leading-tight text-white sm:text-4xl md:text-5xl">
-            What Our <span className="text-orange-400">Students Say</span>
+          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
+            Explore Our <span className="text-cyan-400">World</span>
           </h2>
 
-          {/* Description */}
-
-          <p className="mx-auto mt-5 max-w-2xl text-sm leading-7 text-slate-400 sm:text-base sm:leading-8">
-            Discover how our practical Amazon business training has helped
-            students understand the online business world and build confidence
-            for their entrepreneurial journey.
+          <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-slate-400 sm:text-base">
+            Explore ideas, discover possibilities, and experience the future
+            through our collection.
           </p>
-        </motion.div>
+        </div>
 
-        {/* =================================================
-            TESTIMONIAL AREA
-        ================================================= */}
+        {/* 3D Carousel */}
+        <div
+          className="relative mx-auto flex h-[440px] max-w-5xl items-center justify-center sm:h-[490px] md:h-[530px]"
+          onMouseEnter={() => setPaused(true)}
+          onMouseLeave={() => setPaused(false)}
+          onFocus={() => setPaused(true)}
+          onBlur={(event) => {
+            if (!event.currentTarget.contains(event.relatedTarget)) {
+              setPaused(false);
+            }
+          }}
+        >
+          <div
+            className="relative flex h-full w-full items-center justify-center"
+            style={{
+              perspective: "1200px",
+              transformStyle: "preserve-3d",
+            }}
+          >
+            {cards.map((card, index) => {
+              const offset = (index - active + cards.length) % cards.length;
+              const angle = offset * STEP;
+              const isActive = index === active;
 
-        <div className="mx-auto max-w-5xl">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={currentStudent.id}
-              variants={slideVariants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={{
-                duration: 0.65,
-                ease: [0.22, 1, 0.36, 1],
-              }}
-              className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/[0.04] shadow-2xl backdrop-blur-xl"
-            >
-              {/* =================================================
-                  TOP ORANGE ANIMATED LINE
-              ================================================= */}
-
-              <motion.div
-                initial={{ scaleX: 0 }}
-                animate={{ scaleX: 1 }}
-                transition={{
-                  duration: 0.8,
-                  ease: "easeOut",
-                }}
-                className="absolute left-0 right-0 top-0 h-1 origin-left bg-gradient-to-r from-orange-500 via-yellow-400 to-orange-500"
-              />
-
-              {/* =================================================
-                  CONTENT GRID
-              ================================================= */}
-
-              <div className="grid items-center gap-8 p-6 sm:p-8 md:grid-cols-[260px_1fr] md:gap-10 md:p-10 lg:grid-cols-[300px_1fr] lg:p-12">
-                {/* =================================================
-                    STUDENT IMAGE
-                ================================================= */}
-
+              return (
                 <motion.div
-                  initial={{
-                    opacity: 0,
-                    scale: 0.8,
-                  }}
+                  key={card.title}
+                  className="absolute h-[350px] w-[240px] overflow-hidden rounded-2xl border bg-[#0B121B] shadow-2xl sm:h-[390px] sm:w-[280px]"
                   animate={{
-                    opacity: 1,
-                    scale: 1,
+                    rotateY: angle,
+                    z: isActive ? 0 : -100,
+                    scale: isActive ? 1 : 0.82,
+                    opacity: isActive ? 1 : 0.65,
+                    x:
+                      Math.sin((angle * Math.PI) / 180) *
+                      (typeof window !== "undefined" && window.innerWidth < 640
+                        ? 150
+                        : 240),
                   }}
                   transition={{
-                    delay: 0.15,
-                    duration: 0.6,
+                    duration: transitionDuration,
+                    ease: "easeInOut",
                   }}
-                  className="mx-auto w-full max-w-[230px] sm:max-w-[260px] md:max-w-none"
+                  style={{
+                    transformStyle: "preserve-3d",
+                    backfaceVisibility: "hidden",
+                    borderColor: isActive
+                      ? `${card.color}80`
+                      : "rgba(34,211,238,0.12)",
+                    boxShadow: isActive
+                      ? `0 0 35px ${card.color}20`
+                      : "0 10px 30px rgba(0,0,0,0.25)",
+                    zIndex: isActive ? 10 : cards.length - offset,
+                  }}
+                  aria-hidden={!isActive}
                 >
-                  <div className="relative">
-                    {/* Animated glow */}
-
-                    <motion.div
-                      animate={{
-                        scale: [1, 1.08, 1],
-                        opacity: [0.3, 0.55, 0.3],
+                  {/* Image */}
+                  <div className="relative h-[165px] w-full overflow-hidden sm:h-[185px]">
+                    <img
+                      src={card.image}
+                      alt={card.title}
+                      loading="lazy"
+                      className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
+                      onError={(event) => {
+                        event.currentTarget.style.display = "none";
                       }}
-                      transition={{
-                        duration: 3,
-                        repeat: Infinity,
-                        ease: "easeInOut",
-                      }}
-                      className="absolute inset-3 rounded-full bg-orange-500/30 blur-2xl"
                     />
 
-                    {/* Image */}
+                    {/* Image overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0B121B] via-transparent to-black/10" />
 
-                    <div className="relative aspect-square overflow-hidden rounded-3xl border border-orange-400/20 bg-slate-900">
-                      <motion.img
-                        src={currentStudent.image}
-                        alt={currentStudent.name}
-                        className="h-full w-full object-cover"
-                        whileHover={{
-                          scale: 1.06,
-                        }}
-                        transition={{
-                          duration: 0.5,
-                        }}
+                    {/* Image accent */}
+                    <div
+                      className="absolute bottom-0 left-5 h-1 w-12 rounded-full"
+                      style={{ backgroundColor: card.color }}
+                    />
+                  </div>
+
+                  {/* Card content: H1 + paragraph */}
+                  <div className="relative flex h-[185px] flex-col p-5 sm:h-[205px] sm:p-6">
+                    <div
+                      className="mb-3 flex h-9 w-9 items-center justify-center rounded-lg border text-sm font-bold"
+                      style={{
+                        color: card.color,
+                        borderColor: `${card.color}50`,
+                        backgroundColor: `${card.color}12`,
+                      }}
+                    >
+                      {String(index + 1).padStart(2, "0")}
+                    </div>
+
+                    <h1 className="text-xl font-bold leading-tight text-white sm:text-2xl">
+                      {card.title}
+                    </h1>
+
+                    <p className="mt-2 text-sm leading-6 text-slate-400">
+                      {card.description}
+                    </p>
+
+                    <div className="mt-auto flex items-center gap-2 pt-3">
+                      <span
+                        className="h-1.5 w-1.5 rounded-full"
+                        style={{ backgroundColor: card.color }}
                       />
-
-                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/50 via-transparent to-transparent" />
+                      {/* <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-500">
+                        Explore More
+                      </span> */}
                     </div>
                   </div>
                 </motion.div>
-
-                {/* =================================================
-                    STUDENT INFORMATION
-                ================================================= */}
-
-                <div className="min-w-0">
-                  {/* Quote */}
-
-                  <motion.div
-                    initial={{
-                      opacity: 0,
-                      scale: 0.5,
-                    }}
-                    animate={{
-                      opacity: 1,
-                      scale: 1,
-                    }}
-                    transition={{
-                      delay: 0.25,
-                    }}
-                    className="mb-5 flex h-11 w-11 items-center justify-center rounded-xl bg-orange-500/10 text-orange-400"
-                  >
-                    <i className="fa-solid fa-quote-left text-lg" />
-                  </motion.div>
-
-                  {/* Description */}
-
-                  <motion.p
-                    initial={{
-                      opacity: 0,
-                      y: 15,
-                    }}
-                    animate={{
-                      opacity: 1,
-                      y: 0,
-                    }}
-                    transition={{
-                      delay: 0.3,
-                    }}
-                    className="text-base leading-7 text-slate-300 sm:text-lg sm:leading-8"
-                  >
-                    “{currentStudent.description}”
-                  </motion.p>
-
-                  {/* Stars */}
-
-                  <motion.div
-                    initial={{
-                      opacity: 0,
-                      y: 15,
-                    }}
-                    animate={{
-                      opacity: 1,
-                      y: 0,
-                    }}
-                    transition={{
-                      delay: 0.4,
-                    }}
-                    className="mt-6 flex items-center gap-1"
-                  >
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <motion.i
-                        key={star}
-                        initial={{
-                          opacity: 0,
-                          scale: 0,
-                        }}
-                        animate={{
-                          opacity: 1,
-                          scale: 1,
-                        }}
-                        transition={{
-                          delay: 0.45 + star * 0.08,
-                          type: "spring",
-                          stiffness: 300,
-                        }}
-                        className="fa-solid fa-star text-sm text-yellow-400"
-                      />
-                    ))}
-                  </motion.div>
-
-                  {/* Student Name */}
-
-                  <motion.div
-                    initial={{
-                      opacity: 0,
-                      y: 15,
-                    }}
-                    animate={{
-                      opacity: 1,
-                      y: 0,
-                    }}
-                    transition={{
-                      delay: 0.55,
-                    }}
-                    className="mt-5"
-                  >
-                    <h3 className="break-words text-xl font-bold text-white sm:text-2xl">
-                      {currentStudent.name}
-                    </h3>
-
-                    <p className="mt-1 text-sm font-medium text-orange-400">
-                      {currentStudent.role}
-                    </p>
-                  </motion.div>
-                </div>
-              </div>
-            </motion.div>
-          </AnimatePresence>
-
-          {/* =================================================
-              CONTROLS
-          ================================================= */}
-
-          <div className="mt-8 flex flex-col items-center justify-between gap-5 sm:flex-row">
-            {/* Progress dots */}
-
-            <div className="flex items-center gap-2">
-              {testimonials.map((student, index) => (
-                <button
-                  key={student.id}
-                  onClick={() => setCurrent(index)}
-                  aria-label={`Show testimonial from ${student.name}`}
-                  className="group p-1"
-                >
-                  <motion.span
-                    animate={{
-                      width: current === index ? 32 : 8,
-                      opacity: current === index ? 1 : 0.4,
-                    }}
-                    transition={{
-                      duration: 0.3,
-                    }}
-                    className="block h-2 rounded-full bg-orange-400"
-                  />
-                </button>
-              ))}
-            </div>
-
-            {/* Navigation */}
-
-            <div className="flex items-center gap-3">
-              {/* Previous */}
-
-              <button
-                onClick={previousStudent}
-                aria-label="Previous student"
-                className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white transition-all duration-300 hover:border-orange-400/40 hover:bg-orange-500 active:scale-95"
-              >
-                <i className="fa-solid fa-chevron-left text-sm" />
-              </button>
-
-              {/* Counter */}
-
-              <span className="min-w-[60px] text-center text-sm font-medium text-slate-400">
-                {String(current + 1).padStart(2, "0")}
-                {" / "}
-                {String(testimonials.length).padStart(2, "0")}
-              </span>
-
-              {/* Next */}
-
-              <button
-                onClick={nextStudent}
-                aria-label="Next student"
-                className="flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-white transition-all duration-300 hover:border-orange-400/40 hover:bg-orange-500 active:scale-95"
-              >
-                <i className="fa-solid fa-chevron-right text-sm" />
-              </button>
-            </div>
+              );
+            })}
           </div>
 
-          {/* =================================================
-              AUTO SLIDE PROGRESS
-          ================================================= */}
+          {/* Previous button */}
+          <button
+            type="button"
+            onClick={previousCard}
+            aria-label="Previous card"
+            className="absolute left-0 top-1/2 z-20 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-cyan-400/30 bg-[#0B121B]/90 text-cyan-300 transition hover:border-cyan-300 hover:bg-cyan-400/10 sm:left-4 sm:h-12 sm:w-12"
+          >
+            <ArrowLeft size={20} />
+          </button>
 
-          <div className="mt-6 h-1 w-full overflow-hidden rounded-full bg-white/10">
-            <motion.div
-              key={current}
-              initial={{
-                width: "0%",
-              }}
-              animate={{
-                width: "100%",
-              }}
-              transition={{
-                duration: 5,
-                ease: "linear",
-              }}
-              className="h-full bg-gradient-to-r from-orange-500 to-yellow-400"
-            />
-          </div>
+          {/* Next button */}
+          <button
+            type="button"
+            onClick={nextCard}
+            aria-label="Next card"
+            className="absolute right-0 top-1/2 z-20 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-cyan-400/30 bg-[#0B121B]/90 text-cyan-300 transition hover:border-cyan-300 hover:bg-cyan-400/10 sm:right-4 sm:h-12 sm:w-12"
+          >
+            <ArrowRight size={20} />
+          </button>
         </div>
+
+        {/* Pagination dots */}
+        <div className="relative z-20 mt-6 flex items-center justify-center gap-3">
+          {cards.map((card, index) => (
+            <button
+              key={card.title}
+              type="button"
+              onClick={() => setActive(index)}
+              aria-label={`Go to card ${index + 1}`}
+              aria-current={active === index ? "true" : undefined}
+              className={`h-2.5 rounded-full transition-all duration-300 ${
+                active === index
+                  ? "w-8 bg-cyan-400"
+                  : "w-2.5 bg-slate-700 hover:bg-cyan-700"
+              }`}
+            />
+          ))}
+        </div>
+
+        {/* Current card indicator */}
+        <p className="relative z-10 mt-5 text-center text-xs text-slate-500">
+          {active + 1} / {cards.length}
+        </p>
       </div>
     </section>
   );
-};
-
-export default Testimonials;
+}

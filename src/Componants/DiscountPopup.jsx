@@ -10,7 +10,7 @@ const DiscountBadge = () => {
   useEffect(() => {
     const showTimer = setTimeout(() => {
       setIsVisible(true);
-    }, 1000);
+    }, 500);
 
     const hideTimer = setTimeout(() => {
       setIsVisible(false);
@@ -21,7 +21,6 @@ const DiscountBadge = () => {
       clearTimeout(hideTimer);
     };
   }, []);
-  
 
   return (
     <AnimatePresence>
@@ -61,29 +60,32 @@ const DiscountBadge = () => {
             w-44
             overflow-hidden
             rounded-2xl
-            bg-[#111827]/95
+            border
+            border-cyan-400/20
+            bg-[#080D14]/95
             p-4
-            shadow-2xl
-            backdrop-blur-md
+            shadow-[0_12px_45px_rgba(6,182,212,0.15)]
+            backdrop-blur-xl
             sm:right-6
             sm:w-48
           "
         >
-          {/* Decorative orange glow */}
+          {/* Decorative cyan glow */}
           <div
             className="
+              pointer-events-none
               absolute
               -right-8
               -top-8
               h-24
               w-24
               rounded-full
-              bg-[#FF9900]/30
+              bg-cyan-400/20
               blur-2xl
             "
           />
 
-          {/* Little decorative circle */}
+          {/* Decorative circle */}
           <motion.div
             animate={{
               scale: [1, 1.3, 1],
@@ -100,7 +102,7 @@ const DiscountBadge = () => {
               h-2
               w-2
               rounded-full
-              bg-[#FF9900]
+              bg-cyan-400
             "
           />
 
@@ -124,8 +126,8 @@ const DiscountBadge = () => {
               font-bold
               text-gray-300
               transition
-              hover:bg-white/20
-              hover:text-white
+              hover:bg-cyan-400/20
+              hover:text-cyan-300
             "
           >
             ×
@@ -146,18 +148,18 @@ const DiscountBadge = () => {
                   h-2
                   w-2
                   rounded-full
-                  bg-[#FF9900]
+                  bg-cyan-400
                 "
               />
 
               <span
                 className="
-                text-[10px]
-                font-bold
-                uppercase
-                tracking-widest
-                text-gray-400
-              "
+                  text-[10px]
+                  font-bold
+                  uppercase
+                  tracking-widest
+                  text-gray-400
+                "
               >
                 Limited Offer
               </span>
@@ -167,22 +169,22 @@ const DiscountBadge = () => {
             <div className="mt-3 flex items-end gap-1">
               <span
                 className="
-                text-4xl
-                font-black
-                leading-none
-                text-[#FF9900]
-              "
+                  text-4xl
+                  font-black
+                  leading-none
+                  text-cyan-400
+                "
               >
                 50%
               </span>
 
               <span
                 className="
-                mb-1
-                text-sm
-                font-bold
-                text-white
-              "
+                  mb-1
+                  text-sm
+                  font-bold
+                  text-white
+                "
               >
                 OFF
               </span>
@@ -191,12 +193,12 @@ const DiscountBadge = () => {
             {/* Message */}
             <p
               className="
-              mt-2
-              pr-3
-              text-xs
-              leading-5
-              text-gray-400
-            "
+                mt-2
+                pr-3
+                text-xs
+                leading-5
+                text-gray-400
+              "
             >
               Start your Amazon business journey today.
             </p>
@@ -209,18 +211,19 @@ const DiscountBadge = () => {
                 mt-3
                 block
                 rounded-lg
-                bg-[#FF9900]
+                bg-cyan-500
                 px-3
                 py-2
                 text-center
                 text-xs
                 font-bold
-                text-white
+                text-black
                 shadow-lg
+                shadow-cyan-500/20
                 transition
                 duration-300
-                hover:bg-[#e88b00]
-                hover:shadow-orange-500/30
+                hover:bg-cyan-300
+                hover:shadow-cyan-400/30
               "
             >
               Claim Offer →

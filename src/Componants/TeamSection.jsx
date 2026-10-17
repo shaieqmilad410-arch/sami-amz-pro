@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 
 const teamMembers = [
   {
@@ -24,7 +25,7 @@ const teamMembers = [
     role: "Graphic Designer",
     image: "/sultani3.jpeg",
     description:
-      "Professional graphic designer creating high‑impact visual branding that increases engagement and online visibility.",
+      "Professional graphic designer creating high-impact visual branding that increases engagement and online visibility.",
   },
   {
     id: 4,
@@ -44,275 +45,250 @@ const teamMembers = [
   },
 ];
 
-const TeamSection = () => {
+const AUTOPLAY_DELAY = 2000;
+const STEP = 360 / teamMembers.length;
+
+export default function TeamSection() {
   const [current, setCurrent] = useState(0);
-  const [direction, setDirection] = useState(1);
+  const [paused, setPaused] = useState(false);
+  const [radius, setRadius] = useState(290);
 
-  // Automatic slideshow
+  const prefersReducedMotion = useReducedMotion();
+
   useEffect(() => {
-    const interval = setInterval(() => {
-      setDirection(1);
+    const updateRadius = () => {
+      setRadius(window.innerWidth < 640 ? 205 : 290);
+    };
 
-      setCurrent((prev) => (prev === teamMembers.length - 1 ? 0 : prev + 1));
-    }, 5000);
+    updateRadius();
+    window.addEventListener("resize", updateRadius);
 
-    return () => clearInterval(interval);
+    return () => window.removeEventListener("resize", updateRadius);
   }, []);
 
-  const nextSlide = () => {
-    setDirection(1);
+  useEffect(() => {
+    if (paused || prefersReducedMotion) return;
 
-    setCurrent((prev) => (prev === teamMembers.length - 1 ? 0 : prev + 1));
+    const timer = window.setInterval(() => {
+      setCurrent((previous) => (previous + 1) % teamMembers.length);
+    }, AUTOPLAY_DELAY);
+
+    return () => window.clearInterval(timer);
+  }, [paused, prefersReducedMotion]);
+
+  const nextSlide = () => {
+    setCurrent((previous) => (previous + 1) % teamMembers.length);
   };
 
   const previousSlide = () => {
-    setDirection(-1);
-
-    setCurrent((prev) => (prev === 0 ? teamMembers.length - 1 : prev - 1));
+    setCurrent(
+      (previous) => (previous - 1 + teamMembers.length) % teamMembers.length,
+    );
   };
 
-  const selectSlide = (index) => {
-    setDirection(index > current ? 1 : -1);
-    setCurrent(index);
-  };
-
-  const member = teamMembers[current];
-
-  const slideVariants = {
-    enter: (direction) => ({
-      opacity: 0,
-      x: direction > 0 ? 80 : -80,
-    }),
-
-    center: {
-      opacity: 1,
-      x: 0,
-    },
-
-    exit: (direction) => ({
-      opacity: 0,
-      x: direction > 0 ? -80 : 80,
-    }),
-  };
+  const selectSlide = (index) => setCurrent(index);
 
   return (
-    <section className="overflow-hidden bg-slate-50 py-20 sm:py-24 lg:py-32">
-      <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-12">
-        {/* HEADER */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
+    <section className="relative overflow-hidden bg-[#030609] py-20 text-white sm:py-24 lg:py-28">
+      {/* Background atmosphere */}
+      <div className="pointer-events-none absolute left-1/2 top-[48%] h-[420px] w-[420px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-cyan-500/[0.09] blur-[120px]" />
+
+      <div className="relative mx-auto max-w-7xl px-5 sm:px-8 lg:px-12">
+        {/* Header */}
+        <motion.header
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.2 }}
-          transition={{
-            duration: 0.7,
-            ease: [0.22, 1, 0.36, 1],
-          }}
-          className="mx-auto mb-14 max-w-2xl text-center"
+          viewport={{ once: true }}
+          transition={{ duration: 0.7 }}
+          className="mx-auto mb-8 max-w-2xl text-center"
         >
           <div className="mb-4 flex items-center justify-center gap-3">
-            <span className="h-px w-8 bg-orange-500" />
+            <span className="h-px w-8 bg-cyan-500" />
 
-            <span className="text-sm font-semibold uppercase tracking-[0.18em] text-orange-500">
-              Our Team
+            <span className="text-xs font-medium uppercase tracking-[0.25em] text-cyan-400">
+              Meet Our Team
             </span>
 
-            <span className="h-px w-8 bg-orange-500" />
+            <span className="h-px w-8 bg-cyan-500" />
           </div>
 
-          <h2 className="text-4xl font-bold tracking-[-0.03em] text-slate-900 sm:text-5xl">
-            Meet the people
-            <span className="block text-orange-500">behind your success.</span>
+          <h2 className="text-3xl font-normal tracking-tight text-white sm:text-4xl lg:text-5xl">
+            The people behind
+            <span className="mt-2 block text-cyan-400">your success.</span>
           </h2>
 
-          <p className="mt-5 text-base leading-7 text-slate-600 sm:text-lg">
-            Learn from a team of experienced professionals who are committed to
-            helping you understand Amazon business and build practical skills.
+          <p className="mx-auto mt-5 max-w-xl text-sm leading-7 text-slate-400 sm:text-base">
+            Meet the professionals sharing their experience, skills, and
+            practical knowledge to help you grow.
           </p>
-        </motion.div>
+        </motion.header>
 
-        {/* SLIDER */}
-        <div className="relative mx-auto max-w-5xl">
-          <div className="grid items-center gap-10 overflow-hidden rounded-3xl bg-white p-5 shadow-[0_20px_60px_rgba(15,23,42,0.08)] sm:p-8 md:grid-cols-[0.9fr_1.1fr] md:p-10 lg:p-12">
-            {/* IMAGE */}
-            <div className="relative overflow-hidden rounded-2xl bg-slate-100">
-              <div className="aspect-[4/5] w-full">
-                <AnimatePresence initial={false} custom={direction} mode="wait">
-                  <motion.img
-                    key={member.id}
-                    src={member.image}
-                    alt={member.name}
-                    custom={direction}
-                    variants={slideVariants}
-                    initial="enter"
-                    animate="center"
-                    exit="exit"
-                    transition={{
-                      duration: 0.55,
-                      ease: [0.22, 1, 0.36, 1],
-                    }}
-                    className="h-full w-full object-cover"
-                  />
-                </AnimatePresence>
-              </div>
+        {/* 3D Carousel */}
+        <div
+          className="relative mx-auto h-[480px] w-full max-w-[1100px] overflow-hidden sm:h-[530px]"
+          style={{ perspective: "1400px" }}
+          onMouseEnter={() => setPaused(true)}
+          onMouseLeave={() => setPaused(false)}
+          onFocus={() => setPaused(true)}
+          onBlur={(event) => {
+            if (!event.currentTarget.contains(event.relatedTarget)) {
+              setPaused(false);
+            }
+          }}
+        >
+          {/* Orbit ring */}
+          <div className="pointer-events-none absolute left-1/2 top-1/2 h-[270px] w-[270px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-cyan-400/10 sm:h-[350px] sm:w-[350px]" />
 
-              {/* IMAGE OVERLAY */}
-              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent" />
+          {/* Cards */}
+          {teamMembers.map((member, index) => {
+            const angle = ((index - current) * STEP * Math.PI) / 180;
 
-              {/* MEMBER NUMBER */}
-              <div className="absolute bottom-4 left-4 rounded-full bg-white/95 px-4 py-2 text-xs font-bold text-slate-900 shadow-lg backdrop-blur">
-                0{current + 1} / 0{teamMembers.length}
-              </div>
-            </div>
+            const x = Math.sin(angle) * radius;
+            const depth = Math.cos(angle);
 
-            {/* CONTENT */}
-            <div className="relative min-h-[360px] md:min-h-[400px]">
-              <AnimatePresence initial={false} custom={direction} mode="wait">
-                <motion.div
-                  key={member.id}
-                  custom={direction}
-                  variants={slideVariants}
-                  initial="enter"
-                  animate="center"
-                  exit="exit"
-                  transition={{
-                    duration: 0.55,
-                    ease: [0.22, 1, 0.36, 1],
-                  }}
-                  className="flex h-full flex-col justify-center"
-                >
-                  {/* SMALL LABEL */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.15, duration: 0.4 }}
-                    className="mb-5 flex items-center gap-3"
-                  >
-                    <span className="h-1.5 w-1.5 rounded-full bg-orange-500" />
+            const scale = 0.72 + ((depth + 1) / 2) * 0.28;
+            const opacity = 0.42 + ((depth + 1) / 2) * 0.58;
+            const isActive = index === current;
 
-                    <span className="text-xs font-bold uppercase tracking-[0.18em] text-orange-500">
-                      Team Member
-                    </span>
-                  </motion.div>
-
-                  {/* NAME */}
-                  <motion.h3
-                    initial={{ opacity: 0, y: 15 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2, duration: 0.5 }}
-                    className="text-3xl font-bold tracking-[-0.03em] text-slate-900 sm:text-4xl lg:text-5xl"
-                  >
-                    {member.name}
-                  </motion.h3>
-
-                  {/* ROLE */}
-                  <motion.p
-                    initial={{ opacity: 0, y: 15 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.27, duration: 0.5 }}
-                    className="mt-3 text-base font-semibold text-orange-500"
-                  >
-                    {member.role}
-                  </motion.p>
-
-                  {/* LINE */}
-                  <motion.div
-                    initial={{ width: 0 }}
-                    animate={{ width: 70 }}
-                    transition={{
-                      delay: 0.35,
-                      duration: 0.5,
-                    }}
-                    className="my-7 h-px bg-slate-200"
-                  />
-
-                  {/* DESCRIPTION */}
-                  <motion.p
-                    initial={{ opacity: 0, y: 15 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.4, duration: 0.5 }}
-                    className="max-w-lg text-base leading-8 text-slate-600"
-                  >
-                    {member.description}
-                  </motion.p>
-
-                  {/* EXPERIENCE */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 15 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.48, duration: 0.5 }}
-                    className="mt-7 flex items-center gap-3"
-                  >
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-orange-50 text-orange-500">
-                      <i className="fa-solid fa-user-tie" />
-                    </div>
-
-                    <div>
-                      <p className="text-sm font-semibold text-slate-900">
-                        Professional Team
-                      </p>
-
-                      <p className="text-xs text-slate-500">
-                        Practical knowledge & guidance
-                      </p>
-                    </div>
-                  </motion.div>
-                </motion.div>
-              </AnimatePresence>
-
-              {/* CONTROLS */}
-              <div className="absolute bottom-0 right-0 flex items-center gap-2">
-                <motion.button
-                  type="button"
-                  onClick={previousSlide}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.92 }}
-                  className="flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 transition-colors hover:border-orange-500 hover:bg-orange-500 hover:text-white"
-                  aria-label="Previous team member"
-                >
-                  <i className="fa-solid fa-arrow-left text-sm" />
-                </motion.button>
-
-                <motion.button
-                  type="button"
-                  onClick={nextSlide}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.92 }}
-                  className="flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 transition-colors hover:border-orange-500 hover:bg-orange-500 hover:text-white"
-                  aria-label="Next team member"
-                >
-                  <i className="fa-solid fa-arrow-right text-sm" />
-                </motion.button>
-              </div>
-            </div>
-          </div>
-
-          {/* DOTS */}
-          <div className="mt-8 flex justify-center gap-2">
-            {teamMembers.map((_, index) => (
-              <button
-                key={index}
+            return (
+              <motion.button
+                key={member.id}
                 type="button"
                 onClick={() => selectSlide(index)}
-                aria-label={`Go to team member ${index + 1}`}
-                className="group flex items-center justify-center p-1"
+                aria-label={`View ${member.name}, ${member.role}`}
+                aria-pressed={isActive}
+                initial={false}
+                animate={{
+                  x,
+                  scale,
+                  opacity,
+                  rotateY: -Math.sin(angle) * 32,
+                }}
+                transition={{
+                  duration: prefersReducedMotion ? 0 : 1.1,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+                style={{
+                  position: "absolute",
+                  left: "50%",
+                  top: "50%",
+                  marginLeft: -125,
+                  marginTop: -190,
+                  width: 250,
+                  height: 380,
+                  transformStyle: "preserve-3d",
+                  transformOrigin: "center center",
+                  backfaceVisibility: "hidden",
+                  zIndex: Math.round((depth + 1) * 50),
+                  cursor: isActive ? "default" : "pointer",
+                }}
+                className={`group overflow-hidden rounded-2xl border text-left outline-none transition-colors focus-visible:ring-2 focus-visible:ring-cyan-400 ${
+                  isActive
+                    ? "border-cyan-400/70 shadow-[0_0_45px_rgba(6,182,212,0.18)]"
+                    : "border-cyan-400/20 shadow-[0_12px_40px_rgba(0,0,0,0.4)]"
+                } bg-[#07121b]`}
               >
-                <motion.span
-                  animate={{
-                    width: current === index ? 28 : 7,
-                    opacity: current === index ? 1 : 0.35,
-                  }}
-                  transition={{
-                    duration: 0.3,
-                  }}
-                  className="block h-1.5 rounded-full bg-orange-500"
-                />
-              </button>
-            ))}
-          </div>
+                {/* Portrait */}
+                <div className="relative h-[220px] overflow-hidden">
+                  <img
+                    src={member.image}
+                    alt={member.name}
+                    draggable="false"
+                    loading={Math.abs(index - current) <= 1 ? "eager" : "lazy"}
+                    className="h-full w-full object-cover object-center transition-transform duration-700 group-hover:scale-[1.04]"
+                  />
+
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#07121b] via-transparent to-black/10" />
+
+                  {/* <span className="absolute left-4 top-4 rounded-full border border-cyan-300/30 bg-[#030609]/60 px-3 py-1.5 text-[9px] tracking-[0.18em] text-cyan-300 backdrop-blur-md">
+                    MEMBER 0{member.id}
+                  </span> */}
+
+                  <div className="absolute bottom-3 left-4 flex items-center gap-2">
+                    {/* <span className="h-1.5 w-1.5 rounded-full bg-cyan-400 shadow-[0_0_10px_rgba(34,211,238,0.8)]" /> */}
+                    {/* <span className="text-[10px] uppercase tracking-[0.18em] text-white/80">
+                      Our people
+                    </span> */}
+                  </div>
+                </div>
+
+                {/* Content */}
+                <div className="relative flex h-[160px] flex-col p-5">
+                  <div className="pointer-events-none absolute -right-10 -top-10 h-28 w-28 rounded-full bg-cyan-400/[0.08] blur-3xl" />
+
+                  <h3 className="relative text-xl font-normal leading-tight tracking-tight text-white">
+                    {member.name}
+                  </h3>
+
+                  <p className="mt-2 text-xs font-normal text-cyan-400">
+                    {member.role}
+                  </p>
+
+                  <p className="mt-3 line-clamp-3 text-xs leading-5 text-slate-400">
+                    {member.description}
+                  </p>
+                </div>
+              </motion.button>
+            );
+          })}
         </div>
+
+        {/* Navigation */}
+        {/* <div className="relative z-[200] mt-1 flex flex-col items-center gap-5">
+          <div className="flex items-center gap-5">
+            <motion.button
+              type="button"
+              onClick={previousSlide}
+              whileTap={{ scale: 0.92 }}
+              aria-label="Previous team member"
+              className="flex h-11 w-11 items-center justify-center rounded-full border border-cyan-400/25 text-cyan-300 transition-colors hover:border-cyan-400 hover:bg-cyan-400/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
+            >
+              <ArrowLeft size={17} />
+            </motion.button>
+
+            <div className="flex items-center gap-2">
+              {teamMembers.map((member, index) => (
+                <button
+                  key={member.id}
+                  type="button"
+                  onClick={() => selectSlide(index)}
+                  aria-label={`Go to ${member.name}`}
+                  aria-current={current === index ? "true" : undefined}
+                  className="flex items-center justify-center p-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
+                >
+                  <motion.span
+                    animate={{
+                      width: current === index ? 28 : 7,
+                      opacity: current === index ? 1 : 0.35,
+                    }}
+                    transition={{ duration: 0.35 }}
+                    className="block h-1.5 rounded-full bg-cyan-400"
+                  />
+                </button>
+              ))}
+            </div>
+
+            <motion.button
+              type="button"
+              onClick={nextSlide}
+              whileTap={{ scale: 0.92 }}
+              aria-label="Next team member"
+              className="flex h-11 w-11 items-center justify-center rounded-full border border-cyan-400/25 text-cyan-300 transition-colors hover:border-cyan-400 hover:bg-cyan-400/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
+            >
+              <ArrowRight size={17} />
+            </motion.button>
+          </div>
+
+          <p className="text-[10px] tracking-[0.2em] text-slate-500">
+            {String(current + 1).padStart(2, "0")} / 05
+            <span className="mx-2 text-cyan-500">·</span>
+            AUTO ROTATION · 3 SEC
+          </p>
+        </div> */}
+
+        {/* Bottom accent */}
+        <div className="mx-auto mt-12 h-px w-3/4 bg-gradient-to-r from-transparent via-cyan-500/30 to-transparent" />
       </div>
     </section>
   );
-};
-
-export default TeamSection;
+}
