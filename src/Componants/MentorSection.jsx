@@ -1,249 +1,325 @@
-import React from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { useLayoutEffect, useRef, useState } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-const MentorSection = () => {
-  const reduce = useReducedMotion();
+gsap.registerPlugin(ScrollTrigger);
 
-  const containerVariants = {
-    hidden: {},
-    visible: {
-      transition: {
-        staggerChildren: reduce ? 0 : 0.12,
+export default function MentorSection() {
+  const sectionRef = useRef(null);
+  const [imageError, setImageError] = useState(false);
+
+  useLayoutEffect(() => {
+    const mm = gsap.matchMedia();
+    mm.add(
+      {
+        desktop: "(min-width: 1024px)",
+        reduced: "(prefers-reduced-motion: reduce)",
       },
-    },
-  };
+      ({ conditions }) => {
+        if (conditions.reduced) return;
+        const { desktop } = conditions;
+        const select = gsap.utils.selector(sectionRef.current);
+        const portrait = select(".mentor-portrait")[0];
 
-  const fadeUp = {
-    hidden: reduce ? { opacity: 1 } : { opacity: 0, y: 25 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: reduce ? 0 : 0.65,
-        ease: [0.22, 1, 0.36, 1],
+        // Entrance and parallax use different wrappers.
+        gsap
+          .timeline({
+            scrollTrigger: { trigger: portrait, start: "top 88%", once: true },
+          })
+          .from(portrait, {
+            y: 45,
+            opacity: 0,
+            duration: 1.1,
+            ease: "power3.out",
+          })
+          .from(
+            select(".mentor-mask"),
+            {
+              clipPath: "inset(10% 8% 10% 8% round 28px)",
+              duration: 1.3,
+              ease: "power3.inOut",
+            },
+            0,
+          )
+          .from(
+            select(".mentor-rail"),
+            {
+              scaleY: 0,
+              transformOrigin: "top",
+              duration: 1,
+              ease: "power3.inOut",
+            },
+            0.2,
+          )
+          .from(
+            select(".mentor-caption"),
+            {
+              y: 20,
+              opacity: 0,
+              duration: 0.7,
+              ease: "power3.out",
+            },
+            0.4,
+          );
+
+        const heading = select(".mentor-heading")[0];
+        gsap.from(select(".mentor-word"), {
+          yPercent: 110,
+          rotation: 4,
+          opacity: 0,
+          duration: 0.9,
+          stagger: 0.07,
+          ease: "power4.out",
+          scrollTrigger: { trigger: heading, start: "top 90%", once: true },
+        });
+
+        // Independent triggers avoid revealing offscreen mobile content early.
+        select(".mentor-reveal").forEach((element) => {
+          gsap.from(element, {
+            y: 25,
+            opacity: 0,
+            duration: 0.8,
+            ease: "power3.out",
+            scrollTrigger: { trigger: element, start: "top 94%", once: true },
+          });
+        });
+
+        gsap.from(select(".mentor-divider"), {
+          scaleX: 0,
+          transformOrigin: "left",
+          duration: 1.1,
+          ease: "power3.inOut",
+          scrollTrigger: {
+            trigger: select(".mentor-divider")[0],
+            start: "top 94%",
+            once: true,
+          },
+        });
+
+        gsap.fromTo(
+          select(".mentor-photo"),
+          { scale: 1.13, yPercent: 0 },
+          {
+            scale: 1.03,
+            yPercent: -3,
+            ease: "none",
+            scrollTrigger: {
+              trigger: portrait,
+              start: "top bottom",
+              end: "bottom top",
+              scrub: 1.2,
+            },
+          },
+        );
+
+        gsap.fromTo(
+          select(".mentor-depth"),
+          { y: desktop ? 18 : 8 },
+          {
+            y: desktop ? -22 : -8,
+            ease: "none",
+            scrollTrigger: {
+              trigger: portrait,
+              start: "top bottom",
+              end: "bottom top",
+              scrub: 1.4,
+            },
+          },
+        );
+
+        gsap.fromTo(
+          select(".mentor-glow"),
+          { y: 50 },
+          {
+            y: -60,
+            ease: "none",
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: "top bottom",
+              end: "bottom top",
+              scrub: 1.8,
+            },
+          },
+        );
       },
-    },
-  };
+      sectionRef,
+    );
+    return () => mm.revert();
+  }, []);
 
   return (
     <section
+      ref={sectionRef}
       id="mentor"
-      className="relative isolate overflow-hidden bg-[#070B10] py-20 sm:py-24 lg:py-28"
+      aria-labelledby="mentor-title"
+      className="relative isolate scroll-mt-28 overflow-hidden bg-[#070B10] py-24 text-white sm:py-28 lg:py-32"
     >
-      {/* Hero-style background */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 -z-10 overflow-hidden"
+        className="pointer-events-none absolute inset-0 overflow-hidden"
       >
-        {/* Subtle grid */}
         <div
-          className="absolute inset-0 opacity-[0.07]"
+          className="absolute inset-0 opacity-[0.055]"
           style={{
             backgroundImage:
-              "linear-gradient(rgba(34,211,238,0.35) 1px, transparent 1px), linear-gradient(90deg, rgba(34,211,238,0.35) 1px, transparent 1px)",
-            backgroundSize: "52px 52px",
-            maskImage:
-              "linear-gradient(to bottom, transparent, black 15%, black 85%, transparent)",
-            WebkitMaskImage:
-              "linear-gradient(to bottom, transparent, black 15%, black 85%, transparent)",
+              "linear-gradient(#22d3ee 1px,transparent 1px),linear-gradient(90deg,#22d3ee 1px,transparent 1px)",
+            backgroundSize: "64px 64px",
+            maskImage: "linear-gradient(transparent,black 35%,transparent)",
           }}
         />
-
-        {/* Left cyan ambient glow */}
-        <div className="absolute -left-48 top-10 h-[440px] w-[440px] rounded-full bg-cyan-500/[0.11] blur-[130px]" />
-
-        {/* Right cyan ambient glow */}
-        <div className="absolute -right-48 bottom-0 h-[420px] w-[420px] rounded-full bg-cyan-400/[0.08] blur-[130px]" />
-
-        {/* Top border */}
-        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-cyan-400/25 to-transparent" />
+        <div className="mentor-glow absolute -left-48 top-10 h-[440px] w-[440px] rounded-full bg-cyan-500/10 blur-[110px]" />
+        <div className="mentor-glow absolute -right-48 bottom-0 h-[420px] w-[420px] rounded-full bg-cyan-400/[0.07] blur-[110px]" />
+        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-cyan-300/25 to-transparent" />
       </div>
 
       <div className="relative mx-auto max-w-7xl px-5 sm:px-8 lg:px-12">
-        <div className="grid items-center gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20 xl:gap-24">
-          {/* Mentor image */}
-          <motion.div
-            initial={reduce ? false : { opacity: 0, x: -35 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, amount: 0.2 }}
-            transition={{
-              duration: reduce ? 0 : 0.8,
-              ease: [0.22, 1, 0.36, 1],
-            }}
-            className="relative mx-auto w-full max-w-lg"
-          >
-            {/* Cyan vertical accent */}
-            <motion.div
-              initial={reduce ? false : { scaleY: 0 }}
-              whileInView={{ scaleY: 1 }}
-              viewport={{ once: true }}
-              transition={{
-                duration: reduce ? 0 : 0.8,
-                delay: reduce ? 0 : 0.2,
-                ease: [0.22, 1, 0.36, 1],
-              }}
-              style={{ transformOrigin: "top" }}
-              className="absolute -left-3 top-8 bottom-8 z-10 w-1 rounded-full bg-cyan-400 sm:-left-4"
+        <div className="grid items-center gap-14 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20 xl:gap-24">
+          {/* Portrait */}
+          <div className="mentor-portrait relative mx-auto w-full max-w-lg min-w-0">
+            <div
+              aria-hidden="true"
+              className="mentor-rail absolute -left-2 top-10 bottom-16 w-0.5 rounded-full bg-gradient-to-b from-cyan-200 via-cyan-500 to-transparent sm:-left-4"
             />
-
-            {/* Image frame */}
-            <div className="group relative rounded-2xl border border-cyan-400/20 bg-[#0C121A] p-2 shadow-[0_0_60px_rgba(6,182,212,0.08)] sm:p-3">
-              {/* Decorative corner accents */}
-              <div className="absolute -right-px -top-px z-10 h-16 w-16 rounded-tr-2xl border-r-2 border-t-2 border-cyan-400/70" />
-              <div className="absolute -bottom-px -left-px z-10 h-16 w-16 rounded-bl-2xl border-b-2 border-l-2 border-cyan-400/50" />
-
-              <motion.div
-                initial={reduce ? false : { opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.2 }}
-                transition={{
-                  duration: reduce ? 0 : 0.7,
-                  delay: reduce ? 0 : 0.1,
-                }}
-                className="relative h-[390px] w-full overflow-hidden rounded-xl bg-[#101923] sm:h-[500px]"
+            <div className="relative rounded-[2rem] border border-cyan-300/15 bg-[#0C151D] p-2.5 shadow-[0_30px_80px_-35px_rgba(6,182,212,0.3)] sm:p-3">
+              <div
+                aria-hidden="true"
+                className="absolute -right-px -top-px z-10 h-16 w-16 rounded-tr-[2rem] border-r border-t border-cyan-300/70"
+              />
+              <div
+                className="mentor-mask relative aspect-[4/5] overflow-hidden rounded-[1.4rem] bg-[#101D27]"
+                style={{ clipPath: "inset(0% 0% 0% 0% round 22px)" }}
               >
-                <motion.img
-                  src="/sami photo.jpeg"
-                  alt="Samiullah Akbari, Amazon Business Mentor"
-                  loading="lazy"
-                  className="h-full w-full object-cover object-center"
-                  initial={reduce ? false : { scale: 1.04 }}
-                  whileInView={{ scale: 1 }}
-                  viewport={{ once: true }}
-                  whileHover={reduce ? undefined : { scale: 1.045 }}
-                  transition={{
-                    duration: reduce ? 0 : 0.8,
-                    ease: [0.22, 1, 0.36, 1],
-                  }}
+                {!imageError ? (
+                  <img
+                    src="/sami photo.jpeg"
+                    alt="Samiullah Akbari, Amazon Business Mentor"
+                    loading="lazy"
+                    decoding="async"
+                    onError={() => setImageError(true)}
+                    className="mentor-photo absolute inset-0 h-[108%] w-full object-cover object-center"
+                  />
+                ) : (
+                  <div
+                    role="img"
+                    aria-label="Samiullah Akbari"
+                    className="mentor-photo absolute inset-0 flex items-center justify-center bg-gradient-to-br from-cyan-900/50 to-[#070B10] text-8xl font-bold text-cyan-300/60"
+                  >
+                    SA
+                  </div>
+                )}
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#030A10] via-transparent to-black/10"
                 />
-
-                {/* Image gradient */}
-                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#070B10]/75 via-transparent to-[#070B10]/10" />
-
-                {/* Image caption */}
-                <div className="absolute bottom-5 left-5 right-5 z-10 sm:bottom-7 sm:left-7">
-                  <div className="mb-2 flex items-center gap-2">
-                    <span className="h-1.5 w-1.5 rounded-full bg-cyan-400" />
-                    <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-cyan-300 sm:text-xs">
-                      Your Mentor
+                <div
+                  aria-hidden="true"
+                  className="absolute top-5 right-5 rounded-full border border-white/15 bg-black/25 px-3 py-2 text-[9px] tracking-[0.2em] text-cyan-100 backdrop-blur-md"
+                >
+                  SAMI AMZ PRO
+                </div>
+                <div className="mentor-caption absolute right-6 bottom-10 left-6 sm:left-7">
+                  <div className="mb-3 flex items-center gap-2.5">
+                    <span
+                      aria-hidden="true"
+                      className="h-1.5 w-1.5 rounded-full bg-cyan-300"
+                    />
+                    <span className="text-[10px] font-semibold tracking-[0.25em] text-cyan-200">
+                      YOUR MENTOR
                     </span>
                   </div>
-
-                  <p className="text-xl font-bold tracking-tight text-white sm:text-2xl">
+                  <p className="text-2xl font-semibold tracking-tight sm:text-3xl">
                     Samiullah Akbari
                   </p>
-
-                  <p className="mt-1 text-sm text-gray-300">
+                  <p className="mt-2 text-sm text-slate-300">
                     Amazon Business Mentor
                   </p>
                 </div>
-              </motion.div>
+              </div>
             </div>
 
-            {/* Floating detail */}
-            <motion.div
-              initial={reduce ? false : { opacity: 0, y: 15 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{
-                duration: reduce ? 0 : 0.6,
-                delay: reduce ? 0 : 0.4,
-              }}
-              className="relative mx-auto -mt-5 w-[85%] rounded-xl border border-white/10 bg-[#0C121A]/95 p-4 shadow-2xl backdrop-blur-xl sm:p-5"
-            >
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-cyan-400/20 bg-cyan-400/10 text-cyan-300">
+            <div className="mentor-depth relative z-10 mx-auto -mt-5 w-[92%] sm:w-[88%]">
+              <div className="mentor-reveal flex items-center gap-3 rounded-2xl border border-cyan-300/15 bg-[#0D1A23]/95 p-4 shadow-2xl backdrop-blur-xl sm:p-5">
+                <span
+                  aria-hidden="true"
+                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-cyan-300/20 bg-cyan-300/10 text-cyan-200"
+                >
                   <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="20"
-                    height="20"
+                    width="22"
+                    height="22"
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
                     strokeWidth="1.7"
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    aria-hidden="true"
                   >
-                    <path d="M12 2v4" />
-                    <path d="m16.2 7.8 2.8-2.8" />
-                    <path d="M18 12h4" />
-                    <path d="M2 12h4" />
-                    <path d="m4.9 5 2.8 2.8" />
-                    <path d="M8 12a4 4 0 1 1 8 0c0 2-2 3-2 5h-4c0-2-2-3-2-5Z" />
-                    <path d="M10 20h4" />
+                    <path d="M9 18h6M10 22h4M8.1 14a6 6 0 1 1 7.8 0C14.8 15 14 16 14 18h-4c0-2-.8-3-1.9-4ZM12 1v2M3 10H1M23 10h-2" />
                   </svg>
-                </div>
-
-                <div>
-                  <p className="text-sm font-semibold text-white">
-                    Learn by doing
-                  </p>
-                  <p className="mt-1 text-xs leading-5 text-gray-400 sm:text-sm">
+                </span>
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold">Learn by doing</p>
+                  <p className="mt-1 text-xs leading-5 text-slate-400">
                     Practical learning. Clear direction. Real business skills.
                   </p>
                 </div>
               </div>
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
 
-          {/* Mentor content */}
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
-            className="max-w-2xl"
-          >
-            {/* Eyebrow */}
-            <motion.div
-              variants={fadeUp}
-              className="mb-5 flex items-center gap-3"
-            >
-              <span className="h-px w-8 bg-cyan-400" />
-
-              <span className="text-xs font-bold uppercase tracking-[0.2em] text-cyan-300 sm:text-sm">
-                Meet Your Mentor
+          {/* Content */}
+          <div className="min-w-0 max-w-2xl">
+            <div className="mentor-reveal mb-6 flex items-center gap-3">
+              <span aria-hidden="true" className="h-px w-9 bg-cyan-300" />
+              <span className="text-[10px] font-semibold tracking-[0.24em] text-cyan-200 sm:text-xs">
+                MEET YOUR MENTOR
               </span>
-            </motion.div>
+            </div>
 
-            {/* Heading */}
-            <motion.h2
-              variants={fadeUp}
-              className="text-4xl font-bold leading-[1.1] tracking-tight text-white sm:text-5xl lg:text-[3.5rem] xl:text-[3.8rem]"
+            <h2
+              id="mentor-title"
+              aria-label="Learn from someone who has done it."
+              className="mentor-heading text-[clamp(2.25rem,4.5vw,3.8rem)] leading-[1.14] font-bold tracking-[-0.045em]"
             >
-              Learn from someone
-              <span className="mt-2 block text-cyan-400">who has done it.</span>
-            </motion.h2>
+              <span aria-hidden="true" className="block">
+                {["Learn", "from", "someone"].map((word) => (
+                  <span
+                    key={word}
+                    className="mr-[0.22em] inline-block overflow-hidden align-top pb-1"
+                  >
+                    <span className="mentor-word inline-block">{word}</span>
+                  </span>
+                ))}
+              </span>
+              <span aria-hidden="true" className="block text-cyan-400">
+                {["who", "has", "done", "it."].map((word) => (
+                  <span
+                    key={word}
+                    className="mr-[0.22em] inline-block overflow-hidden align-top pb-1"
+                  >
+                    <span className="mentor-word inline-block">{word}</span>
+                  </span>
+                ))}
+              </span>
+            </h2>
 
-            {/* Description */}
-            <motion.p
-              variants={fadeUp}
-              className="mt-6 max-w-xl text-base leading-8 text-gray-400 sm:mt-7 sm:text-lg"
-            >
+            <p className="mentor-reveal mt-6 max-w-xl text-base leading-8 text-slate-400 sm:text-lg">
               Build your Amazon business with practical knowledge, clear
               strategies, and guidance that goes beyond theory. Learn how to
               research products, work with suppliers, build brands, and create a
               business with confidence.
-            </motion.p>
+            </p>
 
-            {/* Divider */}
-            <motion.div
-              initial={reduce ? false : { width: 0 }}
-              whileInView={{ width: "100%" }}
-              viewport={{ once: true }}
-              transition={{
-                duration: reduce ? 0 : 0.7,
-                delay: reduce ? 0 : 0.35,
-              }}
-              className="my-8 h-px max-w-xl bg-gradient-to-r from-cyan-400/30 via-white/10 to-transparent"
+            <div
+              aria-hidden="true"
+              className="mentor-divider my-8 h-px max-w-xl bg-gradient-to-r from-cyan-300/40 via-white/10 to-transparent"
             />
 
-            {/* Mentor information */}
-            <motion.div variants={fadeUp} className="flex items-start gap-4">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-cyan-400/20 bg-cyan-400/[0.08] text-cyan-300">
+            <div className="mentor-reveal flex items-start gap-4">
+              <span
+                aria-hidden="true"
+                className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-cyan-300/20 bg-cyan-300/[0.06] text-cyan-200"
+              >
                 <svg
-                  xmlns="http://www.w3.org/2000/svg"
                   width="22"
                   height="22"
                   viewBox="0 0 24 24"
@@ -251,52 +327,38 @@ const MentorSection = () => {
                   stroke="currentColor"
                   strokeWidth="1.7"
                   strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
                 >
                   <circle cx="12" cy="8" r="4" />
                   <path d="M5 21v-2a7 7 0 0 1 14 0v2" />
-                  <path d="m9 15 3 2 3-2" />
                 </svg>
-              </div>
-
-              <div className="pt-0.5">
-                <h3 className="text-lg font-bold text-white sm:text-xl">
+              </span>
+              <div className="min-w-0">
+                <h3 className="text-lg font-semibold sm:text-xl">
                   Samiullah Akbari
                 </h3>
-
-                <p className="mt-1 text-sm leading-6 text-gray-400 sm:text-base">
+                <p className="mt-1 text-sm leading-6 text-slate-400">
                   Practical learning. Clear direction. Real business skills.
                 </p>
               </div>
-            </motion.div>
+            </div>
 
-            {/* CTA */}
-            <motion.a
-              variants={fadeUp}
-              href="#contact"
-              whileHover={reduce ? undefined : { x: 4 }}
-              whileTap={reduce ? undefined : { scale: 0.98 }}
-              className="group mt-9 inline-flex items-center gap-3 rounded-lg border border-cyan-400/25 bg-cyan-400/[0.06] px-5 py-3.5 text-sm font-bold text-cyan-300 transition-colors duration-300 hover:border-cyan-400/50 hover:bg-cyan-400/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
-            >
-              Meet your mentor
-              <motion.span
-                animate={reduce ? undefined : { x: [0, 3, 0] }}
-                transition={{
-                  duration: 1.5,
-                  repeat: Infinity,
-                  repeatDelay: 1,
-                }}
-                aria-hidden="true"
+            <div className="mentor-reveal mt-9">
+              <a
+                href="#contact"
+                className="group inline-flex min-h-12 items-center gap-5 rounded-xl border border-cyan-300/25 bg-cyan-300/[0.06] px-5 py-3.5 text-sm font-semibold text-cyan-200 transition-colors hover:border-cyan-300/50 hover:bg-cyan-300/10 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-cyan-300"
               >
-                →
-              </motion.span>
-            </motion.a>
-          </motion.div>
+                Meet your mentor
+                <span
+                  aria-hidden="true"
+                  className="text-lg transition-transform duration-300 group-hover:translate-x-1 motion-reduce:transform-none"
+                >
+                  →
+                </span>
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     </section>
   );
-};
-
-export default MentorSection;
+}
