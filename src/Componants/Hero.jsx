@@ -4,6 +4,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
+
 const PHOTO = "/Warmly Lit Bearded Man Portrait.png";
 
 export default function Hero() {
@@ -12,6 +13,43 @@ export default function Hero() {
 
   useLayoutEffect(() => {
     const mm = gsap.matchMedia();
+
+    // Continuously type, erase, and repeat the heading.
+    // Hidden letters keep their space to prevent layout movement.
+    mm.add(
+      "(prefers-reduced-motion: no-preference)",
+      () => {
+        gsap.set(".amz-letter", { autoAlpha: 0 });
+
+        gsap
+          .timeline({
+            repeat: -1,
+            repeatDelay: 0.3,
+            delay: 0.2,
+          })
+          .to(".amz-letter", {
+            autoAlpha: 1,
+            duration: 0.01,
+            stagger: 0.14,
+            ease: "none",
+          })
+          .to(
+            ".amz-letter",
+            {
+              autoAlpha: 0,
+              duration: 0.01,
+              stagger: {
+                each: 0.07,
+                from: "end",
+              },
+              ease: "none",
+            },
+            "+=1.4",
+          );
+      },
+      root,
+    );
+
     mm.add(
       {
         desktop: "(min-width: 1024px) and (min-height: 720px)",
@@ -19,7 +57,9 @@ export default function Hero() {
       },
       ({ conditions }) => {
         if (conditions.reduced) return;
+
         const desktop = conditions.desktop;
+
         // Separate wrappers keep entrance and scroll transforms independent.
         gsap.from(".amz-reveal", {
           y: 30,
@@ -28,15 +68,7 @@ export default function Hero() {
           duration: 0.9,
           ease: "power3.out",
         });
-        gsap.from(".amz-letter", {
-          yPercent: 115,
-          rotation: 8,
-          autoAlpha: 0,
-          stagger: 0.045,
-          duration: 1.05,
-          delay: 0.15,
-          ease: "power4.out",
-        });
+
         gsap.from(".amz-photo-enter", {
           y: 55,
           autoAlpha: 0,
@@ -45,6 +77,7 @@ export default function Hero() {
           delay: 0.2,
           ease: "power3.out",
         });
+
         gsap.from(".amz-badge-enter", {
           y: 25,
           autoAlpha: 0,
@@ -56,7 +89,10 @@ export default function Hero() {
         });
 
         const scroll = gsap.timeline({
-          defaults: { ease: "none", duration: 1 },
+          defaults: {
+            ease: "none",
+            duration: 1,
+          },
           scrollTrigger: {
             trigger: root.current,
             start: desktop ? "top top" : "top 15%",
@@ -67,6 +103,7 @@ export default function Hero() {
             // markers: true,
           },
         });
+
         scroll
           .to(".amz-copy", { y: desktop ? -50 : -20 }, 0)
           .to(
@@ -122,7 +159,8 @@ export default function Hero() {
       },
       root,
     );
-    // Scoped cleanup supports React Strict Mode and route changes.
+
+    // Clean up animations when the component unmounts.
     return () => mm.revert();
   }, []);
 
@@ -132,9 +170,44 @@ export default function Hero() {
       aria-label="Sami AMZ Pro introduction"
       className="relative isolate overflow-hidden bg-[#05090d] pt-[76px] text-white"
     >
+      <style>{`
+        @media (prefers-reduced-motion: no-preference) {
+          .amz-heading .amz-letter {
+            background-image: linear-gradient(
+              110deg,
+              currentColor 0%,
+              currentColor 35%,
+              #101010 45%,
+              #000000 50%,
+              #101010 55%,
+              currentColor 65%,
+              currentColor 100%
+            );
+            background-size: 300% 100%;
+            background-position: 100% 50%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: amz-heading-black-sweep 3s linear infinite;
+            animation-delay: calc(var(--amz-index, 0) * 0.16s - 3s);
+          }
+        }
+
+        @keyframes amz-heading-black-sweep {
+          from {
+            background-position: 100% 50%;
+          }
+          to {
+            background-position: 0% 50%;
+          }
+        }
+      `}</style>
+
       <div aria-hidden="true" className="pointer-events-none absolute inset-0">
         <div className="amz-glow absolute -right-40 top-20 h-[600px] w-[600px] rounded-full bg-cyan-500/15 blur-[120px]" />
+
         <div className="absolute -left-40 bottom-0 h-96 w-96 rounded-full bg-cyan-500/5 blur-[100px]" />
+
         <div
           className="amz-grid absolute -inset-20 opacity-[0.055]"
           style={{
@@ -144,6 +217,7 @@ export default function Hero() {
             maskImage: "linear-gradient(black,transparent 90%)",
           }}
         />
+
         <span className="absolute bottom-8 left-4 select-none text-[19vw] font-black leading-none tracking-[-0.08em] text-white/[0.018]">
           BUILD. GROW.
         </span>
@@ -153,6 +227,7 @@ export default function Hero() {
         <div className="amz-copy relative z-10">
           <div className="amz-reveal mb-7 inline-flex items-center gap-3 rounded-full border border-cyan-300/15 bg-cyan-300/5 px-4 py-2.5">
             <span className="h-1.5 w-1.5 rounded-full bg-cyan-300 shadow-[0_0_12px_#22d3ee]" />
+
             <span className="text-[9px] font-semibold tracking-[0.22em] text-cyan-200 sm:text-[10px]">
               AMAZON BUSINESS EDUCATION
             </span>
@@ -164,25 +239,40 @@ export default function Hero() {
           >
             <h1
               aria-label="Sami AMZ Pro"
-              className="text-[clamp(3.5rem,7vw,6.6rem)] leading-[1.02] font-extrabold"
+              className="amz-heading text-[clamp(3.5rem,7vw,6.6rem)] leading-[1.02] font-extrabold"
             >
               <span aria-hidden="true" className="block overflow-hidden pb-2">
                 {"Sami".split("").map((letter, i) => (
-                  <span key={i} className="amz-letter inline-block">
+                  <span
+                    key={i}
+                    className="amz-letter inline-block"
+                    style={{ "--amz-index": i }}
+                  >
                     {letter}
                   </span>
                 ))}
               </span>
+
               <span
                 aria-hidden="true"
                 className="block overflow-hidden pb-3 text-cyan-400"
               >
                 {"AMZ Pro".split("").map((letter, i) => (
-                  <span key={i} className="amz-letter inline-block">
+                  <span
+                    key={i}
+                    className="amz-letter inline-block"
+                    style={{ "--amz-index": i + 4 }}
+                  >
                     {letter === " " ? "\u00a0" : letter}
                   </span>
                 ))}
-                <span className="amz-letter inline-block text-white">.</span>
+
+                <span
+                  className="amz-letter inline-block text-white"
+                  style={{ "--amz-index": 11 }}
+                >
+                  .
+                </span>
               </span>
             </h1>
           </div>
@@ -205,6 +295,7 @@ export default function Hero() {
                 ↗
               </span> */}
             </Link>
+
             <span className="text-xs tracking-wide text-slate-400">
               Learn. Build. Grow.
             </span>
@@ -243,30 +334,37 @@ export default function Hero() {
                   S
                 </div>
               )}
+
               <div
                 aria-hidden="true"
                 className="absolute inset-0 bg-gradient-to-t from-[#03090e] via-transparent to-cyan-900/10"
               />
+
               <div
                 aria-hidden="true"
                 className="absolute inset-3 rounded-[1.4rem] border border-white/10"
               />
+
               <div className="absolute top-7 left-7 flex items-center gap-2 rounded-full border border-white/15 bg-black/25 px-3 py-2 text-[8px] tracking-[0.2em] backdrop-blur-md">
-                <span className="h-1 w-1 rounded-full bg-cyan-300" /> LEARN WITH
-                SAMI
+                <span className="h-1 w-1 rounded-full bg-cyan-300" />
+                LEARN WITH SAMI
               </div>
+
               <div className="absolute right-7 bottom-8 left-7">
                 <p className="text-[9px] tracking-[0.25em] text-cyan-300">
                   AMAZON BUSINESS MENTOR
                 </p>
+
                 <div className="mt-3 flex items-end justify-between">
                   <p className="text-2xl font-semibold tracking-tight sm:text-3xl">
                     Sami AMZ Pro
                   </p>
+
                   <span aria-hidden="true" className="text-2xl text-cyan-300">
                     ↗
                   </span>
                 </div>
+
                 <div className="mt-5 h-px bg-white/15">
                   <div className="h-px w-1/3 bg-cyan-300" />
                 </div>
@@ -282,23 +380,28 @@ export default function Hero() {
               >
                 ⌕
               </span>
+
               <div>
                 <p className="text-[9px] tracking-wider text-slate-500">
                   FIRST STEP
                 </p>
+
                 <p className="mt-1 text-xs font-semibold">Find your product</p>
               </div>
             </div>
           </div>
+
           <div className="amz-badge-two absolute right-[-8px] bottom-[24%] sm:-right-8">
             <div className="amz-badge-enter flex items-center gap-3 rounded-2xl border border-cyan-200/30 bg-cyan-400 p-3 text-cyan-950 shadow-[0_12px_40px_-12px_rgba(34,211,238,0.5)] sm:p-4">
               <span aria-hidden="true" className="text-3xl">
                 ↗
               </span>
+
               <div>
                 <p className="text-[9px] tracking-wider opacity-60">
                   YOUR NEXT CHAPTER
                 </p>
+
                 <p className="mt-1 text-xs font-bold">Build your business</p>
               </div>
             </div>
@@ -313,6 +416,7 @@ export default function Hero() {
         <span className="h-5 w-px bg-gradient-to-b from-cyan-300 to-transparent" />{" "}
         SCROLL TO EXPLORE
       </div>
+
       <div
         aria-hidden="true"
         className="absolute inset-x-0 bottom-0 h-px bg-white/5"
